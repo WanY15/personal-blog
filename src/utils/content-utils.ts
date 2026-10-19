@@ -35,6 +35,17 @@ export type PostForList = {
 	slug: string;
 	data: CollectionEntry<"posts">["data"];
 };
+
+/**
+ * 首页排序：置顶文章优先，其余保持发布时间倒序
+ * （Array.prototype.sort 在 ES2019+ 是稳定排序，所以组内顺序不变）
+ */
+export async function getSortedPostsWithPinned() {
+	const sorted = await getSortedPosts();
+	return [...sorted].sort(
+		(a, b) => Number(b.data.pinned) - Number(a.data.pinned),
+	);
+}
 export async function getSortedPostsList(): Promise<PostForList[]> {
 	const sortedFullPosts = await getRawSortedPosts();
 

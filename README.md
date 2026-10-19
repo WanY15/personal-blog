@@ -14,9 +14,9 @@
 |:---:|:---:|
 | ![文章页](docs/screenshots/post.webp) | ![友链页](docs/screenshots/links.webp) |
 
-| 移动端首页（小屏隐藏 Banner） |
-|:---:|
-| ![移动端](docs/screenshots/mobile.webp) |
+| 移动端首页（小屏隐藏 Banner） | 标签页 |
+|:---:|:---:|
+| ![移动端](docs/screenshots/mobile.webp) | ![标签页](docs/screenshots/tags.webp) |
 
 ## ✨ 功能
 
@@ -24,10 +24,10 @@
 - **中文站点**：界面文案、站点语言（`zh_CN`）、RSS/日期等均已本地化
 - **明暗模式 + 可调主题色**：默认色调 `hue: 210`，访客可自行切换主题色
 - **全文搜索**：[Pagefind](https://pagefind.app) 静态索引，中文可搜
-- **文章体系**：标签、分类、归档、分页、目录（TOC）、阅读时长、上一篇/下一篇
+- **文章体系**：标签聚合页（`/tags/`）、分类、归档、分页、目录（TOC）、阅读时长、相关文章、置顶、上一篇/下一篇
 - **Markdown 扩展**：`:::tip` 等提示框、GitHub 仓库卡片、KaTeX 数学公式、Expressive Code 代码块
 - **个性化**：自制横幅/头像/文章封面、友链页、404 页面、自定义 favicon
-- **评论与统计**：内置 Giscus 评论（GitHub Discussions）与 Umami / Cloudflare / Google 统计的配置化接入，默认关闭
+- **评论与统计**：Giscus 评论（GitHub Discussions）与 Umami / Cloudflare / Google 统计，支持 `config.ts` 或 `PUBLIC_*` 环境变量两种接入方式，默认关闭
 - **SEO**：`sitemap`、`robots.txt`、`rss.xml`、canonical、Open Graph / Twitter 分享图（每篇文章自动使用封面）、JSON-LD 结构化数据（WebSite + BlogPosting）
 - **移动端优化**：小屏自动隐藏 Banner，让文章内容优先展示
 
@@ -61,8 +61,8 @@ personal-blog/
 │   │   ├── posts/             # 文章（Markdown）
 │   │   └── spec/about.md      # 关于页内容
 │   ├── assets/images/         # 头像、横幅（会被 Astro 优化）
-│   ├── pages/                 # 页面路由（含自建的 links.astro、404.astro）
-│   ├── components/            # 组件（含自建的 Comments.astro、Analytics.astro）
+│   ├── pages/                 # 页面路由（含自建的 links.astro、404.astro、tags/）
+│   ├── components/            # 组件（含自建的 Comments、Analytics、RelatedPosts、PostList）
 │   ├── i18n/                  # 多语言文案
 │   └── styles/                # 样式
 ├── public/
@@ -71,12 +71,16 @@ personal-blog/
 │   └── og-default.webp        # 默认社交分享图（1200×630）
 ├── docs/
 │   ├── deploy.md              # 部署指南（Cloudflare / Vercel / Netlify / GitHub Pages / 自建）
+│   ├── customize.md           # 个性化与占位替换指南
 │   └── screenshots/           # README 预览截图
 ├── astro.config.mjs           # Astro 配置（部署前改 site 域名）
+├── .env.example               # 评论 / 统计环境变量示例
 └── package.json
 ```
 
 ## ✏️ 改成你自己的
+
+> 所有占位内容的替换索引（文件 + 具体字段）见 **[docs/customize.md](docs/customize.md)**，下面是最常用的几项。
 
 1. **站点信息**：编辑 `src/config.ts`
    - `siteConfig`：标题、副标题、语言、主题色、横幅、TOC、favicon、默认分享图
@@ -96,6 +100,7 @@ personal-blog/
    tags: [标签1, 标签2]
    category: 分类名
    draft: false
+   pinned: false               # true = 首页置顶
    ---
    ```
 
@@ -105,10 +110,10 @@ personal-blog/
    - 头像 `src/assets/images/avatar.png`、横幅 `src/assets/images/banner.png`
    - 文章封面放在 `public/covers/`，建议用 WebP 控制体积（文章页/Giscus 不会压缩大图）
    - favicon 在 `public/favicon/`，当前使用的是 `avatar-32.png` / `avatar-192.png`
-7. **评论（Giscus）**：编辑 `src/config.ts` 的 `commentsConfig`
+7. **评论（Giscus）**：编辑 `src/config.ts` 的 `commentsConfig`，或使用 `.env` 里的 `PUBLIC_GISCUS_*` 环境变量（详见 [docs/customize.md](docs/customize.md)）
    - 在 GitHub 仓库开启 Discussions、安装 [giscus App](https://github.com/apps/giscus)
-   - 到 <https://giscus.app/zh-CN> 获取 `repoId` / `categoryId`，填好后把 `enable` 改为 `true`
-8. **访问统计**：编辑 `src/config.ts` 的 `analyticsConfig`
+   - 到 <https://giscus.app/zh-CN> 获取 `repoId` / `categoryId`，填好后把 `enable` 改为 `true`（或填齐环境变量自动启用）
+8. **访问统计**：编辑 `src/config.ts` 的 `analyticsConfig`，或使用 `PUBLIC_ANALYTICS_PROVIDER` 等环境变量（见 `.env.example`）
    - `provider` 可选 `"none"` / `"umami"` / `"cloudflare"` / `"google"`，填好对应 ID 即自动注入脚本
 9. **社交分享图**：`public/og-default.webp`（1200×630）；文章页会优先使用文章封面作为分享图
 
@@ -144,6 +149,7 @@ personal-blog/
 - 工程化调整：`.npmrc` 关闭 pnpm 自动切换版本；移除仅允许 pnpm 的 `preinstall` 钩子；`package.json` 更名为 `wany-blog`
 - 部署配置：`astro.config.mjs` 的 `site` 改为占位域名，部署前需替换
 - 第二轮改进：接入可配置的 Giscus 评论与访问统计（默认关闭）；补齐 `og:image`、canonical、WebSite/BlogPosting JSON-LD；移动端隐藏 Banner 让内容优先；新增移动端导航与页面截图；补充部署文档、CI（Node 20/22）与手动部署工作流；初始化 Git 仓库
+- 第三轮改进：新增 `/tags/` 标签聚合页与标签文章页（导航加入「标签」）；文章详情页新增「相关文章」（按标签/分类评分）；支持文章置顶（`pinned: true`，首页优先展示并带置顶标识）；评论/统计支持 `PUBLIC_*` 环境变量接入；补齐 `.env.example` 与 [docs/customize.md](docs/customize.md) 替换索引
 
 ## 📄 许可与致谢
 

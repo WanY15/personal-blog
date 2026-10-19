@@ -42,6 +42,7 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
+		LinkPreset.Tags,
 		LinkPreset.About,
 		{
 			name: "友链",
@@ -98,14 +99,28 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 //   3. 打开 https://giscus.app/zh-CN ，填入仓库信息，复制 repoId 和 categoryId
 //   4. 把下面的 enable 改为 true，并填入对应信息
 // ─────────────────────────────────────────────────────────────────────────────
+// 环境变量覆盖：部署平台注入 PUBLIC_* 后无需改源码（本地可写在 .env 里，参考 .env.example）
+const env = import.meta.env;
+const envGiscusRepo =
+	(env.PUBLIC_GISCUS_REPO as string | undefined)?.trim() ?? "";
+const envGiscusRepoId =
+	(env.PUBLIC_GISCUS_REPO_ID as string | undefined)?.trim() ?? "";
+const envGiscusCategory =
+	(env.PUBLIC_GISCUS_CATEGORY as string | undefined)?.trim() ?? "";
+const envGiscusCategoryId =
+	(env.PUBLIC_GISCUS_CATEGORY_ID as string | undefined)?.trim() ?? "";
+
 export const commentsConfig: CommentsConfig = {
-	enable: false,
+	// 填好 Giscus 的 repoId / categoryId 后自动启用；也可以用 PUBLIC_GISCUS_* 环境变量
+	enable:
+		env.PUBLIC_GISCUS_ENABLE === "true" ||
+		Boolean(envGiscusRepo && envGiscusRepoId && envGiscusCategoryId),
 	provider: "giscus",
 	giscus: {
-		repo: "your-name/your-repo",
-		repoId: "R_kgDOxxxxxx",
-		category: "Announcements",
-		categoryId: "DIC_kwDOxxxxxx",
+		repo: envGiscusRepo || "your-name/your-repo",
+		repoId: envGiscusRepoId || "R_kgDOxxxxxx",
+		category: envGiscusCategory || "Announcements",
+		categoryId: envGiscusCategoryId || "DIC_kwDOxxxxxx",
 		mapping: "pathname",
 		strict: false,
 		reactionsEnabled: true,
@@ -113,20 +128,32 @@ export const commentsConfig: CommentsConfig = {
 	},
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+const envAnalyticsProvider = (
+	env.PUBLIC_ANALYTICS_PROVIDER as string | undefined
+)
+	?.trim()
+	.toLowerCase();
+const analyticsProvider: AnalyticsConfig["provider"] =
+	envAnalyticsProvider === "umami" ||
+	envAnalyticsProvider === "cloudflare" ||
+	envAnalyticsProvider === "google"
+		? envAnalyticsProvider
+		: "none";
+
 // 访问统计：provider 可选 "none" | "umami" | "cloudflare" | "google"
 // 填好对应字段后自动在页面 head 注入统计脚本
-// ─────────────────────────────────────────────────────────────────────────────
 export const analyticsConfig: AnalyticsConfig = {
-	provider: "none",
+	provider: analyticsProvider,
 	umami: {
-		scriptUrl: "https://cloud.umami.is/script.js", // 自建 Umami 时改成自己的地址
-		websiteId: "",
+		scriptUrl:
+			(env.PUBLIC_UMAMI_SCRIPT_URL as string | undefined) ||
+			"https://cloud.umami.is/script.js", // 自建 Umami 时改成自己的地址
+		websiteId: (env.PUBLIC_UMAMI_WEBSITE_ID as string | undefined) ?? "",
 	},
 	cloudflare: {
-		token: "", // Cloudflare Web Analytics 的 beacon token
+		token: (env.PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN as string | undefined) ?? "", // Cloudflare Web Analytics 的 beacon token
 	},
 	google: {
-		measurementId: "", // 形如 G-XXXXXXXXXX
+		measurementId: (env.PUBLIC_GA_MEASUREMENT_ID as string | undefined) ?? "", // 形如 G-XXXXXXXXXX
 	},
 };

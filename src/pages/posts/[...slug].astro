@@ -2,6 +2,7 @@
 import path from "node:path";
 import Comments from "@components/Comments.astro";
 import License from "@components/misc/License.astro";
+import RelatedPosts from "@components/RelatedPosts.astro";
 import Markdown from "@components/misc/Markdown.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
@@ -27,6 +28,24 @@ const { entry } = Astro.props;
 const { Content, headings } = await entry.render();
 
 const { remarkPluginFrontmatter } = await entry.render();
+
+// 相关文章：优先标签重合多的，其次同分类，最多 3 篇
+const allPosts = await getSortedPosts();
+const currentTags = new Set(entry.data.tags);
+const relatedPosts = allPosts
+	.filter((post) => post.slug !== entry.slug)
+	.map((post) => {
+		const tagOverlap = post.data.tags.filter((tag) =>
+			currentTags.has(tag),
+		).length;
+		const sameCategory =
+			post.data.category && post.data.category === entry.data.category ? 1 : 0;
+		return { post, score: tagOverlap * 2 + sameCategory };
+	})
+	.filter((item) => item.score > 0)
+	.sort((a, b) => b.score - a.score)
+	.slice(0, 3)
+	.map((item) => item.post);
 
 const jsonLd = {
 	"@context": "https://schema.org",
@@ -115,6 +134,8 @@ const jsonLd = {
 
         </div>
     </div>
+
+    <RelatedPosts posts={relatedPosts} />
 
     <Comments />
 
