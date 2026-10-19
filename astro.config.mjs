@@ -26,7 +26,9 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://your-domain.com/", // TODO: 部署前改成你自己的域名
+	// 部署域名：优先读取构建环境变量 SITE_URL（Cloudflare Pages / Vercel 等平台可在环境变量里配置），
+// 这样以后换域名不用改代码；未设置时回退到占位域名。
+site: process.env.SITE_URL || "https://your-domain.com/",
 	base: "/",
 	trailingSlash: "always",
 	integrations: [

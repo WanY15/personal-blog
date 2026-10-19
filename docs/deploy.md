@@ -13,16 +13,34 @@
 
 免费、自带 CDN、国内访问相对友好，支持 Git 自动部署。
 
-1. 把仓库推送到 GitHub / Gitee。
-2. 打开 [Cloudflare Dashboard](https://dash.cloudflare.com/) → Workers & Pages → Create → Pages → Connect to Git，选择仓库。
-3. 构建设置：
+> 本仓库已就绪：`pnpm-lock.yaml`、`.nvmrc`、`public/_headers`（静态资源缓存）都已提交，无需额外配置。
+
+1. 确保代码已推送到 GitHub（当前仓库：`WanY15/personal-blog`）。
+2. 打开 [Cloudflare Dashboard](https://dash.cloudflare.com/) → **Workers & Pages** → **Create application** → **Pages** → **Connect to Git**，授权 GitHub 并选择 `personal-blog` 仓库。
+3. 构建配置：
+   - Project name：自定义，例如 `wany-blog`（决定默认域名 `wany-blog.pages.dev`）
+   - Production branch：`main`
    - Framework preset：`Astro`
    - Build command：`pnpm build`
    - Build output directory：`dist`
-   - Node version：`20` 或更高（环境变量 `NODE_VERSION=22`）
-4. 部署完成后在 Pages 项目的 Custom domains 里绑定自己的域名。
+   - Root directory：留空（`/`）
+4. 环境变量（Environment variables）建议加：
+
+   | 变量 | 值 | 说明 |
+   |---|---|---|
+   | `NODE_VERSION` | `22` | 构建使用的 Node 版本 |
+   | `PNPM_VERSION` | `9.14.4` | 与 `packageManager` 保持一致 |
+   | `SITE_URL` | `https://wany-blog.pages.dev/`（或你的自定义域名） | 影响 RSS / sitemap / OG 的绝对链接 |
+
+   > `SITE_URL` 是构建时变量，换了域名后改这里重新部署即可，不用改代码。
+
+5. 点 **Save and Deploy**。首次构建约 1–2 分钟，完成后会得到 `https://<project>.pages.dev`。
+6. （可选）**Custom domains** 绑定自己的域名；绑定后记得把 `SITE_URL` 改成正式域名并重新部署。
+7. 之后每次 `git push` 到 `main`，Cloudflare 会自动重新构建发布。
 
 > 也可以使用手动部署：本地执行 `pnpm build`，然后 `npx wrangler pages deploy dist --project-name=你的项目名`。
+
+> ⚠️ 如果仓库里同时有 GitHub Actions 的 `deploy.yml`，它只用于手动触发 Cloudflare 部署，和 Pages 的 Git 集成二选一即可，不要重复配置。
 
 ## 方式二：Vercel
 

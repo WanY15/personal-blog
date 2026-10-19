@@ -128,6 +128,7 @@ personal-blog/
 构建命令 `pnpm build`，输出目录 `dist/`。简单说：
 
 - **Vercel / Netlify / Cloudflare Pages**：导入仓库，框架选 Astro，构建命令 `pnpm build`，输出目录 `dist`
+- **Cloudflare Pages**：在环境变量里设置 `SITE_URL`（正式域名）、`NODE_VERSION=22`、`PNPM_VERSION=9.14.4`，即可 push 自动发布
 - **GitHub Pages**：注意 `site` + `base` 的配置（否则静态资源路径会错），详见部署文档
 - **自建服务器**：`dist/` 是纯静态文件，交给 Nginx/Caddy 即可
 
