@@ -98,9 +98,12 @@ pinned: false               # true 时在首页置顶
 
 ## 6. 评论（Giscus）
 
-基于 GitHub Discussions，免费、零后端，读者用 GitHub 账号登录即可评论（评论数据保存在你仓库的 Discussions 里）。
+基于 GitHub Discussions，免费、零后端，读者用 GitHub 账号登录即可评论（评论数据保存在仓库的 Discussions 里）。
 
-> ⚠️ 前提：**博客仓库必须是公开（Public）仓库**，否则 giscus 读不到 Discussions。
+> ✅ 当前站点已配置为 `WanY15/blog-comments`（General 分类），评论区已启用。
+> 以下步骤用于更换仓库或重新配置。
+
+> ⚠️ 前提：**存放评论的仓库必须是公开（Public）仓库**，否则 giscus 读不到 Discussions。
 
 ### 首次配置步骤（约 5 分钟）
 

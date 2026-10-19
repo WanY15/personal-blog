@@ -41,7 +41,7 @@ const giscusLang = langMap[siteConfig.lang] || "en";
 				data-reactions-enabled={giscus.reactionsEnabled ? "1" : "0"}
 				data-input-position={giscus.inputPosition}
 				data-lang={giscusLang}
-				data-loading="lazy"
+				data-loading="eager"
 			/>
 			<script is:inline>
 				(function () {
@@ -70,7 +70,7 @@ const giscusLang = langMap[siteConfig.lang] || "en";
 						script.setAttribute("data-input-position", ds.inputPosition);
 						script.setAttribute("data-theme", currentTheme());
 						script.setAttribute("data-lang", ds.lang);
-						script.setAttribute("data-loading", "lazy");
+						script.setAttribute("data-loading", "eager");
 						container.appendChild(script);
 
 						// 主题切换时同步 giscus 主题（含 Swup 页面切换后的情况）

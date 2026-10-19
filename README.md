@@ -18,6 +18,10 @@
 |:---:|:---:|
 | ![移动端](docs/screenshots/mobile.webp) | ![标签页](docs/screenshots/tags.webp) |
 
+| 文章底部：相关文章 + 评论区 |
+|:---:|
+| ![相关文章与评论区](docs/screenshots/comments.webp) |
+
 ## ✨ 功能
 
 - **Astro 静态构建**：输出纯静态 HTML，交互组件按需水合，首屏几乎没有 JS 负担
@@ -27,7 +31,7 @@
 - **文章体系**：标签聚合页（`/tags/`）、分类、归档、分页、目录（TOC）、阅读时长、相关文章、置顶、上一篇/下一篇
 - **Markdown 扩展**：`:::tip` 等提示框、GitHub 仓库卡片、KaTeX 数学公式、Expressive Code 代码块
 - **个性化**：自制横幅/头像/文章封面、友链页、404 页面、自定义 favicon
-- **评论与统计**：Giscus 评论（GitHub Discussions）与 Umami / Cloudflare / Google 统计，支持 `config.ts` 或 `PUBLIC_*` 环境变量两种接入方式，默认关闭
+- **评论与统计**：Giscus 评论已启用（数据存 `WanY15/blog-comments` 的 Discussions）；访问统计支持 Umami / Cloudflare / Google，可通过 `config.ts` 或 `PUBLIC_*` 环境变量接入（默认关闭）
 - **SEO**：`sitemap`、`robots.txt`、`rss.xml`、canonical、Open Graph / Twitter 分享图（每篇文章自动使用封面）、JSON-LD 结构化数据（WebSite + BlogPosting）
 - **移动端优化**：小屏自动隐藏 Banner，让文章内容优先展示
 
@@ -110,9 +114,9 @@ personal-blog/
    - 头像 `src/assets/images/avatar.png`、横幅 `src/assets/images/banner.png`
    - 文章封面放在 `public/covers/`，建议用 WebP 控制体积（文章页/Giscus 不会压缩大图）
    - favicon 在 `public/favicon/`，当前使用的是 `avatar-32.png` / `avatar-192.png`
-7. **评论（Giscus）**：编辑 `src/config.ts` 的 `commentsConfig`，或使用 `.env` 里的 `PUBLIC_GISCUS_*` 环境变量（详见 [docs/customize.md](docs/customize.md)）
-   - 前提：仓库必须**公开**并开启 Discussions、安装 [giscus App](https://github.com/apps/giscus)
-   - 到 <https://giscus.app/zh-CN> 获取 `repoId` / `categoryId`，填好后把 `enable` 改为 `true`（或填齐环境变量自动启用）
+7. **评论（Giscus）**：**已启用**，当前使用 `WanY15/blog-comments` 仓库的 `General` 分类；需要更换仓库时编辑 `src/config.ts` 的 `commentsConfig`，或用 `.env` 里的 `PUBLIC_GISCUS_*` 覆盖（详见 [docs/customize.md](docs/customize.md)）
+   - 前提：存放评论的仓库必须**公开**并开启 Discussions、安装 [giscus App](https://github.com/apps/giscus)
+   - 到 <https://giscus.app/zh-CN> 可获取新的 `repoId` / `categoryId`
 8. **访问统计**：编辑 `src/config.ts` 的 `analyticsConfig`，或使用 `PUBLIC_ANALYTICS_PROVIDER` 等环境变量（见 `.env.example`）
    - `provider` 可选 `"none"` / `"umami"` / `"cloudflare"` / `"google"`，填好对应 ID 即自动注入脚本
 9. **社交分享图**：`public/og-default.webp`（1200×630）；文章页会优先使用文章封面作为分享图
@@ -150,6 +154,7 @@ personal-blog/
 - 部署配置：`astro.config.mjs` 的 `site` 改为占位域名，部署前需替换
 - 第二轮改进：接入可配置的 Giscus 评论与访问统计（默认关闭）；补齐 `og:image`、canonical、WebSite/BlogPosting JSON-LD；移动端隐藏 Banner 让内容优先；新增移动端导航与页面截图；补充部署文档、CI（Node 20/22）与手动部署工作流；初始化 Git 仓库
 - 第三轮改进：新增 `/tags/` 标签聚合页与标签文章页（导航加入「标签」）；文章详情页新增「相关文章」（按标签/分类评分）；支持文章置顶（`pinned: true`，首页优先展示并带置顶标识）；评论/统计支持 `PUBLIC_*` 环境变量接入；补齐 `.env.example` 与 [docs/customize.md](docs/customize.md) 替换索引
+- 第四轮改进：启用 Giscus 评论（`WanY15/blog-comments` → `General` 分类），评论主题跟随站点明暗模式
 
 ## 📄 许可与致谢
 

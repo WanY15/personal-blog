@@ -93,11 +93,9 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Giscus 评论（基于 GitHub Discussions，零后端）
-// 开启步骤：
-//   1. 在 GitHub 仓库 Settings → General → Features 中勾选 Discussions
-//   2. 安装 giscus App：https://github.com/apps/giscus
-//   3. 打开 https://giscus.app/zh-CN ，填入仓库信息，复制 repoId 和 categoryId
-//   4. 把下面的 enable 改为 true，并填入对应信息
+// 当前已启用：WanY15/blog-comments → General 分类
+// 如需更换仓库：到 https://giscus.app/zh-CN 重新生成 repoId / categoryId 后替换
+// 也可用环境变量覆盖（PUBLIC_GISCUS_*，见 .env.example）
 // ─────────────────────────────────────────────────────────────────────────────
 // 环境变量覆盖：部署平台注入 PUBLIC_* 后无需改源码（本地可写在 .env 里，参考 .env.example）
 const env = import.meta.env;
@@ -111,20 +109,18 @@ const envGiscusCategoryId =
 	(env.PUBLIC_GISCUS_CATEGORY_ID as string | undefined)?.trim() ?? "";
 
 export const commentsConfig: CommentsConfig = {
-	// 填好 Giscus 的 repoId / categoryId 后自动启用；也可以用 PUBLIC_GISCUS_* 环境变量
-	enable:
-		env.PUBLIC_GISCUS_ENABLE === "true" ||
-		Boolean(envGiscusRepo && envGiscusRepoId && envGiscusCategoryId),
+	// 已启用 Giscus 评论（数据存在 WanY15/blog-comments 的 Discussions）；临时关闭改成 false
+	enable: true,
 	provider: "giscus",
 	giscus: {
-		repo: envGiscusRepo || "your-name/your-repo",
-		repoId: envGiscusRepoId || "R_kgDOxxxxxx",
-		category: envGiscusCategory || "Announcements",
-		categoryId: envGiscusCategoryId || "DIC_kwDOxxxxxx",
+		repo: envGiscusRepo || "WanY15/blog-comments",
+		repoId: envGiscusRepoId || "R_kgDOVPrCUA",
+		category: envGiscusCategory || "General",
+		categoryId: envGiscusCategoryId || "DIC_kwDOVPrCUM4DJAeR",
 		mapping: "pathname",
 		strict: false,
 		reactionsEnabled: true,
-		inputPosition: "top",
+		inputPosition: "bottom",
 	},
 };
 
