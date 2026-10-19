@@ -1,0 +1,102 @@
+---
+import { Icon } from "astro-icon/components";
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+import { commentsConfig, siteConfig } from "@/config";
+
+const { enable, giscus } = commentsConfig;
+
+// giscus 使用 BCP 47 语言标签
+const langMap: Record<string, string> = {
+	zh_CN: "zh-CN",
+	zh_TW: "zh-TW",
+	ja: "ja",
+	ko: "ko",
+	en: "en",
+	es: "es",
+	th: "th",
+	vi: "vi",
+	tr: "tr",
+	id: "id",
+};
+const giscusLang = langMap[siteConfig.lang] || "en";
+---
+
+{
+	enable && (
+		<div class="card-base px-6 md:px-9 py-6 mb-4 onload-animation">
+			<div class="flex items-center gap-2 font-bold text-lg mb-4 text-90">
+				<Icon name="fa6-regular:comments" class="text-[var(--primary)]" />
+				<span>{i18n(I18nKey.comments)}</span>
+			</div>
+			<div
+				class="giscus"
+				id="giscus-container"
+				data-repo={giscus.repo}
+				data-repo-id={giscus.repoId}
+				data-category={giscus.category}
+				data-category-id={giscus.categoryId}
+				data-mapping={giscus.mapping}
+				data-strict={giscus.strict ? "1" : "0"}
+				data-reactions-enabled={giscus.reactionsEnabled ? "1" : "0"}
+				data-input-position={giscus.inputPosition}
+				data-lang={giscusLang}
+				data-loading="lazy"
+			/>
+			<script is:inline>
+				(function () {
+					function initGiscus() {
+						var container = document.getElementById("giscus-container");
+						if (!container || container.dataset.loaded === "1") return;
+						container.dataset.loaded = "1";
+
+						var ds = container.dataset;
+						var currentTheme = function () {
+							return document.documentElement.classList.contains("dark") ? "dark" : "light";
+						};
+
+						var script = document.createElement("script");
+						script.src = "https://giscus.app/client.js";
+						script.async = true;
+						script.crossOrigin = "anonymous";
+						script.setAttribute("data-repo", ds.repo);
+						script.setAttribute("data-repo-id", ds.repoId);
+						script.setAttribute("data-category", ds.category);
+						script.setAttribute("data-category-id", ds.categoryId);
+						script.setAttribute("data-mapping", ds.mapping);
+						script.setAttribute("data-strict", ds.strict);
+						script.setAttribute("data-reactions-enabled", ds.reactionsEnabled);
+						script.setAttribute("data-emit-metadata", "0");
+						script.setAttribute("data-input-position", ds.inputPosition);
+						script.setAttribute("data-theme", currentTheme());
+						script.setAttribute("data-lang", ds.lang);
+						script.setAttribute("data-loading", "lazy");
+						container.appendChild(script);
+
+						// 主题切换时同步 giscus 主题（含 Swup 页面切换后的情况）
+						if (!window.__giscusThemeObserver) {
+							window.__giscusThemeObserver = new MutationObserver(function () {
+								var frame = document.querySelector("iframe.giscus-frame");
+								if (frame && frame.contentWindow) {
+									frame.contentWindow.postMessage(
+										{ giscus: { setConfig: { theme: currentTheme() } } },
+										"https://giscus.app",
+									);
+								}
+							});
+							window.__giscusThemeObserver.observe(document.documentElement, {
+								attributes: true,
+								attributeFilter: ["class"],
+							});
+						}
+					}
+
+					initGiscus();
+					// Swup 是无刷新导航，页面切换后需要重新初始化评论区
+					document.addEventListener("swup:page:view", initGiscus);
+					document.addEventListener("swup:contentReplaced", initGiscus);
+				})();
+			</script>
+		</div>
+	)
+}

@@ -1,0 +1,136 @@
+import type { AUTO_MODE, DARK_MODE, LIGHT_MODE } from "@constants/constants";
+
+export type SiteConfig = {
+	title: string;
+	subtitle: string;
+
+	lang:
+		| "en"
+		| "zh_CN"
+		| "zh_TW"
+		| "ja"
+		| "ko"
+		| "es"
+		| "th"
+		| "vi"
+		| "tr"
+		| "id";
+
+	themeColor: {
+		hue: number;
+		fixed: boolean;
+	};
+	banner: {
+		enable: boolean;
+		src: string;
+		position?: "top" | "center" | "bottom";
+		credit: {
+			enable: boolean;
+			text: string;
+			url?: string;
+		};
+	};
+	toc: {
+		enable: boolean;
+		depth: 1 | 2 | 3;
+	};
+
+	favicon: Favicon[];
+
+	/** Default social share image, relative to /public or an absolute URL */
+	ogImage?: string;
+};
+
+export type Favicon = {
+	src: string;
+	theme?: "light" | "dark";
+	sizes?: string;
+};
+
+export enum LinkPreset {
+	Home = 0,
+	Archive = 1,
+	About = 2,
+}
+
+export type NavBarLink = {
+	name: string;
+	url: string;
+	external?: boolean;
+};
+
+export type NavBarConfig = {
+	links: (NavBarLink | LinkPreset)[];
+};
+
+export type ProfileConfig = {
+	avatar?: string;
+	name: string;
+	bio?: string;
+	links: {
+		name: string;
+		url: string;
+		icon: string;
+	}[];
+};
+
+export type LicenseConfig = {
+	enable: boolean;
+	name: string;
+	url: string;
+};
+
+export type LIGHT_DARK_MODE =
+	| typeof LIGHT_MODE
+	| typeof DARK_MODE
+	| typeof AUTO_MODE;
+
+export type BlogPostData = {
+	body: string;
+	title: string;
+	published: Date;
+	description: string;
+	tags: string[];
+	draft?: boolean;
+	image?: string;
+	category?: string;
+	prevTitle?: string;
+	prevSlug?: string;
+	nextTitle?: string;
+	nextSlug?: string;
+};
+
+export type ExpressiveCodeConfig = {
+	theme: string;
+};
+
+export type CommentsConfig = {
+	enable: boolean;
+	provider: "giscus";
+	giscus: {
+		/** GitHub repo in the form "owner/repo" */
+		repo: string;
+		repoId: string;
+		category: string;
+		categoryId: string;
+		mapping: "pathname" | "url" | "title" | "og:title" | "specific";
+		strict: boolean;
+		reactionsEnabled: boolean;
+		inputPosition: "top" | "bottom";
+	};
+};
+
+export type AnalyticsConfig = {
+	provider: "none" | "umami" | "cloudflare" | "google";
+	umami?: {
+		/** Self-hosted or cloud script URL, e.g. https://cloud.umami.is/script.js */
+		scriptUrl?: string;
+		websiteId: string;
+	};
+	cloudflare?: {
+		token: string;
+	};
+	google?: {
+		measurementId: string;
+	};
+};

@@ -1,0 +1,47 @@
+---
+import { analyticsConfig } from "@/config";
+
+const { provider, umami, cloudflare, google } = analyticsConfig;
+---
+
+{
+	provider === "umami" && umami?.websiteId && (
+		<script
+			is:inline
+			defer
+			src={umami.scriptUrl || "https://cloud.umami.is/script.js"}
+			data-website-id={umami.websiteId}
+		/>
+	)
+}
+
+{
+	provider === "cloudflare" && cloudflare?.token && (
+		<script
+			is:inline
+			defer
+			src="https://static.cloudflareinsights.com/beacon.min.js"
+			data-cf-beacon={JSON.stringify({ token: cloudflare.token })}
+		/>
+	)
+}
+
+{
+	provider === "google" && google?.measurementId && (
+		<>
+			<script
+				is:inline
+				async
+				src={`https://www.googletagmanager.com/gtag/js?id=${google.measurementId}`}
+			/>
+			<script is:inline define:vars={{ measurementId: google.measurementId }}>
+				window.dataLayer = window.dataLayer || [];
+				function gtag() {
+					window.dataLayer.push(arguments);
+				}
+				gtag("js", new Date());
+				gtag("config", measurementId);
+			</script>
+		</>
+	)
+}
