@@ -98,27 +98,65 @@ pinned: false               # true 时在首页置顶
 
 ## 6. 评论（Giscus）
 
-基于 GitHub Discussions，免费、零后端。两种启用方式任选其一：
+基于 GitHub Discussions，免费、零后端，读者用 GitHub 账号登录即可评论（评论数据保存在你仓库的 Discussions 里）。
 
-**方式 A：改代码（本地开发常用）**
+> ⚠️ 前提：**博客仓库必须是公开（Public）仓库**，否则 giscus 读不到 Discussions。
 
-1. GitHub 仓库 → Settings → General → Features → 勾选 **Discussions**
-2. 安装 [giscus App](https://github.com/apps/giscus)，授权到你的博客仓库
-3. 打开 <https://giscus.app/zh-CN>，填入仓库，复制 `repoId` 和 `categoryId`
-4. 修改 `src/config.ts` 的 `commentsConfig`：填入 4 个字段并把 `enable` 设为 `true`
+### 首次配置步骤（约 5 分钟）
 
-**方式 B：环境变量（部署平台推荐）**
+1. **把代码推送到公开的 GitHub 仓库**（如果还没做）
 
-复制 `.env.example` 为 `.env`（或直接在部署平台的环境变量里填）：
+   ```bash
+   git remote add origin https://github.com/你的账号/仓库名.git
+   git push -u origin main
+   ```
 
-```env
-PUBLIC_GISCUS_REPO=owner/repo
-PUBLIC_GISCUS_REPO_ID=R_kgDOxxxxxx
-PUBLIC_GISCUS_CATEGORY=Announcements
-PUBLIC_GISCUS_CATEGORY_ID=DIC_kwDOxxxxxx
-```
+   然后到仓库 Settings → General → 最下方把仓库可见性改为 **Public**。
 
-三项 ID 齐全时会自动启用，无需改源码。注意：`PUBLIC_*` 变量会在构建时写入静态产物，**不要放密钥**。
+2. **开启 Discussions**：仓库 Settings → General → Features → 勾选 **Discussions**。
+
+3. **安装 giscus App**：打开 <https://github.com/apps/giscus> → Install → 选择你的博客仓库授权。
+
+4. **获取两个 ID**：打开 <https://giscus.app/zh-CN>
+   - Repository 填 `你的账号/仓库名`（必须已公开且开了 Discussions）
+   - Discussion category 选一个分类（推荐 `Announcements`；没有的话先在仓库 Discussions 里建一个）
+   - 页面下方会自动生成配置，复制 `data-repo-id`（如 `R_kgDO...`）和 `data-category-id`（如 `DIC_kwDO...`）
+
+5. **填入配置**（二选一）：
+
+   **方式 A：改代码**（本地开发常用）——修改 `src/config.ts`：
+
+   ```ts
+   export const commentsConfig: CommentsConfig = {
+     enable: true, // 改为 true
+     giscus: {
+       repo: "你的账号/仓库名",
+       repoId: "R_kgDO...",      // 第 4 步拿到
+       category: "Announcements",
+       categoryId: "DIC_kwDO...", // 第 4 步拿到
+       // 其余保持默认
+     },
+   };
+   ```
+
+   **方式 B：环境变量**（部署平台推荐）——复制 `.env.example` 为 `.env`，或在部署平台的环境变量里填：
+
+   ```env
+   PUBLIC_GISCUS_REPO=owner/repo
+   PUBLIC_GISCUS_REPO_ID=R_kgDOxxxxxx
+   PUBLIC_GISCUS_CATEGORY=Announcements
+   PUBLIC_GISCUS_CATEGORY_ID=DIC_kwDOxxxxxx
+   ```
+
+   三项 ID 齐全时会自动启用，无需改源码。注意：`PUBLIC_*` 变量会在构建时写入静态产物，**不要放密钥**。
+
+6. **验证**：本地 `pnpm dev` 打开任意文章页，页面底部应出现评论区；点「使用 GitHub 登录」能正常授权即成功。部署后同理，评论会出现在仓库的 Discussions 中。
+
+### 常见问题
+
+- **评论区空白/报错**：依次检查 ① 仓库是否 Public ② Discussions 是否开启 ③ `repoId`/`categoryId` 是否复制完整 ④ giscus App 是否授权到了这个仓库。
+- **主题不跟随明暗模式**：本项目已内置主题同步逻辑，若仍不生效，检查是否被浏览器插件拦截了 iframe。
+- **评论管理**：直接去仓库的 Discussions 页面删除/锁定/回复，无需额外后台。
 
 评论主题会自动跟随站点明暗模式切换。
 

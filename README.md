@@ -111,7 +111,7 @@ personal-blog/
    - 文章封面放在 `public/covers/`，建议用 WebP 控制体积（文章页/Giscus 不会压缩大图）
    - favicon 在 `public/favicon/`，当前使用的是 `avatar-32.png` / `avatar-192.png`
 7. **评论（Giscus）**：编辑 `src/config.ts` 的 `commentsConfig`，或使用 `.env` 里的 `PUBLIC_GISCUS_*` 环境变量（详见 [docs/customize.md](docs/customize.md)）
-   - 在 GitHub 仓库开启 Discussions、安装 [giscus App](https://github.com/apps/giscus)
+   - 前提：仓库必须**公开**并开启 Discussions、安装 [giscus App](https://github.com/apps/giscus)
    - 到 <https://giscus.app/zh-CN> 获取 `repoId` / `categoryId`，填好后把 `enable` 改为 `true`（或填齐环境变量自动启用）
 8. **访问统计**：编辑 `src/config.ts` 的 `analyticsConfig`，或使用 `PUBLIC_ANALYTICS_PROVIDER` 等环境变量（见 `.env.example`）
    - `provider` 可选 `"none"` / `"umami"` / `"cloudflare"` / `"google"`，填好对应 ID 即自动注入脚本
